@@ -1,0 +1,13 @@
+#!/bin/bash
+
+bin="$(readlink -f "$(dirname "$0")")"
+
+chain=block.countries
+
+iptables -t filter -D INPUT -j $chain 2>/dev/null
+iptables -t raw -D PREROUTING -j $chain 2>/dev/null
+
+iptables -t filter -F $chain 2>/dev/null
+iptables -t filter -X $chain 2>/dev/null
+iptables -t raw -F $chain 2>/dev/null
+iptables -t raw -X $chain 2>/dev/null

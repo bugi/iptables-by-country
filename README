@@ -1,0 +1,35 @@
+This is a set of scripts you can use to block the IP addresses of specified
+countries from access to specific ports.  For instance, to reduce the
+volume of breakin attempts, you could block anyone not in your local
+country from access to your SSH port.
+
+Warning:  This should not be your only security!  Also, hot coffee will
+scald you if you spill it on your lap.
+
+Warning:  This set of scripts manipulates the iptables raw table.  If
+you're using it for anything else, be careful.
+
+
+WARNING:  Be nice!  Please read the usage usage limits policy for the
+dataset:  http://www.ipdeny.com/usagelimits.php
+
+
+To prepare your environment:
+
+	Install NetAddr::IP.  The debian package is libnetaddr-ip-perl.
+
+	Download seed data by running ./Initialize.
+
+	Edit block-countries.conf to specify which ports and which
+	countries to block.
+
+Running this will download fresh data and load it into your iptables:
+
+	./Refresh
+
+
+
+You might even put that in crontab, but please don't run it more often
+than allowed by the usage limits policy for the dataset:
+
+	http://www.ipdeny.com/usagelimits.php

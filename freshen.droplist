@@ -1,0 +1,23 @@
+#!/bin/bash
+
+fn=www.spamhaus.org/drop/drop.lasso
+url=http://$fn
+W='wget -qr'
+
+if [ ! -f $fn ]
+then
+	md5o=''
+else
+	md5o=$( md5sum - < $fn 2>/dev/null | awk '{print $1}' )
+fi
+
+$W "$url"
+echo got $fn
+md5=$( md5sum - < $fn 2>/dev/null | awk '{print $1}' )
+
+if [ "$md5" = "$md5o" ]
+then
+	echo 0
+else
+	echo 1
+fi

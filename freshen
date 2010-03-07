@@ -1,0 +1,29 @@
+#!/bin/bash
+
+urlBase=http://www.ipdeny.com/ipblocks/data/countries # update cut-dirs if you change urlBase
+W='wget -q -r -nH --cut-dirs=3' # update cut-dirs if you change urlBase
+
+all=all-zones.tar.gz
+md5list=MD5SUM
+
+if ! cd zones
+then
+	echo zones dir disappeared, or you have yet to create it manually 1>&2
+	echo 0
+	exit 1
+fi
+
+# wget -r -nH --cut-dirs=3 http://www.ipdeny.com/ipblocks/data/countries/MD5SUM
+# echo fetching new $md5list
+$W "$urlBase/$md5list"
+echo got md5
+
+i=0
+for f in $( grep -vE '  ('"$md5list"'$|'"$all"'$)' < $md5list | md5sum -c - 2>/dev/null | grep ': FAILED$' | sed 's/:.*//' )
+do
+	echo fetching new $f
+	$W "$urlBase/$f"
+	i=$(( i + 1 ))
+done
+
+echo $i
