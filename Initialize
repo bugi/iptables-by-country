@@ -1,4 +1,5 @@
 #!/bin/sh
 
 wget http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-tar xfz all-zones.tar.gz
+mkdir -p zones
+tar xfz all-zones.tar.gz -C zones
