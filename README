@@ -18,6 +18,9 @@ To prepare your environment:
 
 	Install NetAddr::IP.  The debian package is libnetaddr-ip-perl.
 
+	Install ipset.  This is in modern linux kernels, but needs userland
+	tools.  In debian, the package is called "ipset".
+
 	Download seed data by running ./Initialize.
 
 	Edit block-countries.conf to specify which ports and which

@@ -1,64 +1,10 @@
 #!/bin/bash
 
-bin="$(readlink -f "$(dirname "$0")")"
-
-. "$bin"/block-countries.conf
-
-function DIE () {
-	rm -f zones.$$ drop.lasso.zone
-	}
-trap DIE EXIT
-
-chain=block.countries
-
-iptables -t filter -F $chain 2>/dev/null
-iptables -t filter -N $chain 2>/dev/null
-iptables -t raw -F $chain 2>/dev/null
-iptables -t raw -N $chain 2>/dev/null
-
-zn=0
-sed 's/ *;.*//' < www.spamhaus.org/drop/drop.lasso | grep -v '^$' > drop.lasso.zone
-for z in drop.lasso.zone zones/*.zone ; do
-	if [ "$z" = drop.lasso.zone ]
-	then
-		cc=00
-	else
-		cc="${z##*/}"
-		cc="${cc%.zone}"
-	fi
-	echo -n $cc 1>&2
-	if blockP $cc
-	then
-		cat $z
-		zz=$(wc -l < $z)
-		zn=$(( zn + zz ))
-		echo -n "($zz)" 1>&2
-	fi
-	echo -n ' ' 1>&2
-	echo $zn > zn.$$
-done | $bin/compact_cidr.pl > zones.$$
-echo 1>&2
-
-zn=$( cat zn.$$ )
-rm -f zn.$$
-znn=$( wc -l < zones.$$ )
-echo optimizing reduced $zn to $znn: $(( 100 - ( $znn * 100 / $zn ) ))% savings	1>&2
-
-(
-echo '*raw'
-for ip in $(cat zones.$$ )
-do
-	echo -A $chain -s $ip -j DROP
-	# echo -A $chain -j DROP -s $ip -p tcp --dport 22
-done
-echo COMMIT
-) | iptables-restore -n
-
-
-if [ $(iptables -t raw -nL PREROUTING | grep -c $chain ) -lt 3 ]
+if [ -n "$1" ]
 then
-	for port in $PORTS
-	do
-		iptables -t raw -A PREROUTING -p tcp --dport $port -j $chain
-	done
+	t="$1"
+else
+	t=raw
 fi
+
+exec "$0.$t"
